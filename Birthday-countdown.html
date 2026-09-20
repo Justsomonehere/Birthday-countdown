@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Countdown 🎂</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffe4f1, #e4f0ff);
+      color: #222;
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .add-box {
+      background: white;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+    }
+
+    input,
+    button {
+      font-size: 16px;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: #ff69a6;
+      color: white;
+      font-weight: bold;
+    }
+
+    button:hover {
+      transform: scale(1.03);
+    }
+
+    #message {
+      margin-top: 10px;
+      color: #d33;
+      text-align: center;
+    }
+
+    #count {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .birthdays {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+    }
+
+    .birthday-card {
+      background: white;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .birthday-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .birthday-name {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .birthday-date {
+      color: #777;
+      margin-top: 5px;
+    }
+
+    .delete {
+      background: #ff4d4d;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-top: 20px;
+    }
+
+    .time {
+      background: #f4f4f4;
+      border-radius: 10px;
+      padding: 10px 4px;
+      text-align: center;
+    }
+
+    .number {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .label {
+      font-size: 11px;
+      color: #777;
+    }
+
+    .happy {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      margin-top: 40px;
+      font-size: 18px;
+    }
+
+    @media (max-width: 650px) {
+      .form {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>🎂 Birthday Countdown 🎉</h1>
+
+    <p class="subtitle">
+      Never forget a birthday again!
+    </p>
+
+    <div class="add-box">
+
+      <div class="form">
+
+        <input
+          type="text"
+          id="name"
+          placeholder="Person's name"
+          maxlength="40"
+        >
+
+        <input
+          type="date"
+          id="birthday"
+        >
+
+        <button onclick="addBirthday()">
+          + Add Birthday
+        </button>
+
+      </div>
+
+      <div id="message"></div>
+
+    </div>
+
+    <div id="count">
+      0 / 50 birthdays
+    </div>
+
+    <div id="birthdays" class="birthdays"></div>
+
+    <div id="empty" class="empty">
+      No birthdays yet 🎈<br>
+      Add someone's birthday above!
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const birthdays = [];
+
+    function addBirthday() {
+
+      const nameInput = document.getElementById("name");
+      const birthdayInput = document.getElementById("birthday");
+      const message = document.getElementById("message");
+
+      const name = nameInput.value.trim();
+      const birthday = birthdayInput.value;
+
+      message.textContent = "";
+
+      if (!name || !birthday) {
+        message.textContent =
+          "Please enter a name and birthday.";
+        return;
+      }
+
+      if (birthdays.length >= 50) {
+        message.textContent =
+          "You've reached the maximum of 50 birthdays! 😈";
+        return;
+      }
+
+      const date = new Date(birthday + "T00:00:00");
+
+      birthdays.push({
+        name: name,
+        month: date.getMonth(),
+        day: date.getDate()
+      });
+
+      nameInput.value = "";
+      birthdayInput.value = "";
+
+      renderBirthdays();
+    }
+
+
+    function getNextBirthday(month, day) {
+
+      const now = new Date();
+
+      let year = now.getFullYear();
+
+      let birthday = new Date(
+        year,
+        month,
+        day,
+        0,
+        0,
+        0
+      );
+
+      if (birthday <= now) {
+        birthday = new Date(
+          year + 1,
+          month,
+          day,
+          0,
+          0,
+          0
+        );
+      }
+
+      return birthday;
+    }
+
+
+    function renderBirthdays() {
+
+      const container =
+        document.getElementById("birthdays");
+
+      const empty =
+        document.getElementById("empty");
+
+      const count =
+        document.getElementById("count");
+
+      container.innerHTML = "";
+
+      count.textContent =
+        `${birthdays.length} / 50 birthdays`;
+
+      empty.style.display =
+        birthdays.length === 0
+          ? "block"
+          : "none";
+
+
+      birthdays.forEach((person, index) => {
+
+        const card =
+          document.createElement("div");
+
+        card.className = "birthday-card";
+
+        card.innerHTML = `
+
+          <div class="birthday-header">
+
+            <div>
+              <div class="birthday-name">
+                🎉 ${escapeHTML(person.name)}
+              </div>
+
+              <div class="birthday-date">
+                ${person.month + 1}/${person.day}
+              </div>
+            </div>
+
+            <button
+              class="delete"
+              onclick="removeBirthday(${index})"
+            >
+              Remove
+            </button>
+
+          </div>
+
+          <div class="countdown">
+
+            <div class="time">
+              <div class="number days">0</div>
+              <div class="label">DAYS</div>
+            </div>
+
+            <div class="time">
+              <div class="number hours">0</div>
+              <div class="label">HOURS</div>
+            </div>
+
+            <div class="time">
+              <div class="number minutes">0</div>
+              <div class="label">MINUTES</div>
+            </div>
+
+            <div class="time">
+              <div class="number seconds">0</div>
+              <div class="label">SECONDS</div>
+            </div>
+
+          </div>
+
+          <div class="happy"></div>
+        `;
+
+        container.appendChild(card);
+
+      });
+
+      updateCountdowns();
+    }
+
+
+    function updateCountdowns() {
+
+      const cards =
+        document.querySelectorAll(".birthday-card");
+
+      const now = new Date();
+
+      cards.forEach((card, index) => {
+
+        const person = birthdays[index];
+
+        const target =
+          getNextBirthday(
+            person.month,
+            person.day
+          );
+
+        let difference =
+          target - now;
+
+        if (difference < 0) {
+          difference = 0;
+        }
+
+        const days =
+          Math.floor(
+            difference / (1000 * 60 * 60 * 24)
+          );
+
+        const hours =
+          Math.floor(
+            difference / (1000 * 60 * 60)
+          ) % 24;
+
+        const minutes =
+          Math.floor(
+            difference / (1000 * 60)
+          ) % 60;
+
+        const seconds =
+          Math.floor(
+            difference / 1000
+          ) % 60;
+
+
+        card.querySelector(".days")
+          .textContent = days;
+
+        card.querySelector(".hours")
+          .textContent = hours;
+
+        card.querySelector(".minutes")
+          .textContent = minutes;
+
+        card.querySelector(".seconds")
+          .textContent = seconds;
+
+
+        if (
+          days === 0 &&
+          hours === 0 &&
+          minutes === 0 &&
+          seconds === 0
+        ) {
+
+          card.querySelector(".happy")
+            .textContent =
+            "🎂 HAPPY BIRTHDAY!!! 🥳";
+
+        } else {
+
+          card.querySelector(".happy")
+            .textContent = "";
+
+        }
+
+      });
+    }
+
+
+    function removeBirthday(index) {
+
+      birthdays.splice(index, 1);
+
+      renderBirthdays();
+    }
+
+
+    function escapeHTML(text) {
+
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    setInterval(
+      updateCountdowns,
+      1000
+    );
+
+
+  </script>
+
+</body>
+</html>
